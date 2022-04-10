@@ -179,6 +179,7 @@ struct OnboardingView: View {
                                     // Fade into next screen
                                     withAnimation(Animation.easeOut(duration: 0.4)) {
                                         if buttonOffset > buttonWidth / 2 {
+                                            playSound(sound: "chimeup", type: "mp3")
                                             buttonOffset = buttonWidth - 80
                                             isOnboardingViewActive = false
                                         } else {
@@ -203,6 +204,7 @@ struct OnboardingView: View {
         .onAppear(perform: {
             isAnimating = true
         })
+        .preferredColorScheme(.dark)
     }
 }
 
