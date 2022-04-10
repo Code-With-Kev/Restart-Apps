@@ -13,6 +13,13 @@ struct OnboardingView: View {
     @AppStorage("onboarding") var isOnboardingViewActive: Bool = true
     //This TRUE value will only be added to the property when the program doesnt find the ONBOARDING key previously set in the device's permanent storage (in ContentView). Therefore, if a running program does find a previous onboarding key, it will ignore everything after the equal sign.
     
+    @State private var buttonWidth: Double = UIScreen.main.bounds.width - 80
+    // The button's width property is the actual screen's width - 80
+    
+    @State private var buttonOffset: CGFloat = 0
+    // Initialize button drag
+    
+        
     // MARK: - BODY
     
     var body: some View {
@@ -97,9 +104,15 @@ struct OnboardingView: View {
                         }
                         .foregroundColor(.white)
                         .frame(width: 80, height: 80, alignment: .center)
-                        .onTapGesture {
-                            isOnboardingViewActive = false
-                        }
+                        .offset(x: buttonOffset)
+                        .gesture(
+                            DragGesture()
+                                .onChanged { gesture in
+                                    if gesture.translation.width > 0 {
+                                        buttonOffset = gesture.translation.width
+                                    }
+                                }
+                        ) //: GESTURE
                         
                         Spacer()
                     }//: HSTACK
@@ -108,7 +121,8 @@ struct OnboardingView: View {
                     
                     
                 } //: FOOTER
-                .frame(height: 80, alignment: .center)
+                .frame(width: buttonWidth, height: 80, alignment: .center)
+                    //width: buttonWidth - adds width constraint to button
                 .padding()
                 
             } //: V STACK
@@ -128,3 +142,5 @@ struct OnboardingView_Previews: PreviewProvider {
     // 1. Copy code you want to be reused
     // 2. Create a new SwiftUI file in View Folder
     // 3. Replace Hello World text with copied code
+
+// if gesture.translation.width > 0 - Only run when the dragging has been started in the right direction
