@@ -19,6 +19,9 @@ struct OnboardingView: View {
     @State private var buttonOffset: CGFloat = 0
     // Initialize button drag
     
+    @State private var isAnimating: Bool = false
+    
+    
         
     // MARK: - BODY
     
@@ -50,7 +53,10 @@ struct OnboardingView: View {
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 10)
-                }
+                } //: HEADER
+                .opacity(isAnimating ? 1 : 0)
+                .offset(y: isAnimating ? 0 : -40)
+                .animation(.easeOut(duration: 1), value: isAnimating)
                 
                //MARK: - CENTER
                 ZStack {
@@ -59,6 +65,8 @@ struct OnboardingView: View {
                     Image("character-1")
                         .resizable()
                         .scaledToFit()
+                        .opacity(isAnimating ? 1 : 0)
+                        .animation(.easeOut(duration: 0.5), value: isAnimating)
                 }//: CENTER
                 
                 Spacer()
@@ -113,29 +121,35 @@ struct OnboardingView: View {
                                         buttonOffset = gesture.translation.width
                                     }
                                 }//: ONCHANGED
+                            // MARK: - DRAG ONENDED
                                 .onEnded { _ in
-                                    if buttonOffset > buttonWidth / 2 {
-                                        buttonOffset = buttonWidth - 80
-                                        isOnboardingViewActive = false
-                                    } else {
-                                        buttonOffset = 0 // brings button back to start
+                                    // Fade into next screen
+                                    withAnimation(Animation.easeOut(duration: 0.4)) {
+                                        if buttonOffset > buttonWidth / 2 {
+                                            buttonOffset = buttonWidth - 80
+                                            isOnboardingViewActive = false
+                                        } else {
+                                            buttonOffset = 0 // brings button back to start
+                                        }
                                     }
                                 }
                         ) //: GESTURE
                         
                         Spacer()
                     }//: HSTACK
-                    
-                    
-                    
-                    
                 } //: FOOTER
                 .frame(width: buttonWidth, height: 80, alignment: .center)
                     //width: buttonWidth - adds width constraint to button
                 .padding()
+                .opacity(isAnimating ? 1 : 0)
+                .offset(y: isAnimating ? 0 : 40)
+                .animation(.easeOut(duration: 1), value: isAnimating)
                 
             } //: V STACK
         } //: Z STACK
+        .onAppear(perform: {
+            isAnimating = true
+        })
     }
 }
 
