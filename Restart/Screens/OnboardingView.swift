@@ -14,13 +14,16 @@ struct OnboardingView: View {
     //This TRUE value will only be added to the property when the program doesnt find the ONBOARDING key previously set in the device's permanent storage (in ContentView). Therefore, if a running program does find a previous onboarding key, it will ignore everything after the equal sign.
     
     @State private var buttonWidth: Double = UIScreen.main.bounds.width - 80
-    // The button's width property is the actual screen's width - 80
+    // The button's width property is the actual screen's width - 80, so padding of 40 on each side
     
     @State private var buttonOffset: CGFloat = 0
     // Initialize button drag
     
     @State private var isAnimating: Bool = false
     @State private var imageOffset: CGSize = .zero
+    @State private var indicatorOpacity: Double = 1.0
+    @State private var textTitle: String = "Share."
+    
     
     
         
@@ -39,15 +42,14 @@ struct OnboardingView: View {
                  
                 VStack(spacing: 0){
                     
-                    Text("Share.")
+                    Text(textTitle)
                         .font(.system(size: 60))
                         .fontWeight(.heavy)
                         .foregroundColor(.white)
-                        .offset(y: abs(imageOffset.width) / -5)
-                        .opacity(abs(imageOffset.width * 100))
-                        .animation(.easeOut(duration: 1), value: imageOffset)
+                        .transition(.opacity)
+                        // Fix text transition problem
+                        .id(textTitle)
                     
-                    //use triple quotes for a subheading
                     Text("""
                     It's not how much we give but
                     how much love we put into giving
@@ -84,17 +86,41 @@ struct OnboardingView: View {
                                     //Control how far you can drag image
                                     if abs(imageOffset.width) <= 150 {
                                         imageOffset = gesture.translation
+                                        
+                                        //Change arrow indicator
+                                        withAnimation(.linear(duration: 0.25)) {
+                                            indicatorOpacity = 0
+                                            textTitle = "Give."
+                                        }
+                                        
                                     }
                                 }//: ONCHANGED
                             //Reset image position to start after drag
                                 .onEnded {  _ in
                                     imageOffset = .zero
+                                    
+                                    withAnimation(.linear(duration: 0.25)) {
+                                        indicatorOpacity = 1
+                                        textTitle = "Share."
+                                    }
                                 }
                         ) //: GESTURE
                         //Make drag movement smoother
                         .animation(.easeOut(duration: 1), value: imageOffset)
                     
                 }//: CENTER
+                //MARK: - ARROW
+                .overlay(
+                    Image(systemName: "arrow.left.and.right.circle")
+                        .font(.system(size: 44, weight: .ultraLight))
+                        .foregroundColor(.white)
+                        .offset(y: 20)
+                        .opacity(isAnimating ? 1 : 0)
+                        .animation(.easeOut(duration: 1).delay(2), value: isAnimating)
+                        .opacity(indicatorOpacity)
+                    //Note the comma
+                    ,   alignment: .bottom
+                )
                 
                 Spacer()
                 
@@ -222,3 +248,9 @@ struct OnboardingView_Previews: PreviewProvider {
 //    .onEnded { _ in
 //        imageOffset = .zero
 //    }
+
+// WHY TEXT TRANSITIONS ARE DIFFICULT / ID METHOD
+// Swift UI see text changes as being the same rather than becoming a different view. But we can explicitly tell SwiftUI that this is a different view after the value change with the ID method
+
+// SUBHEADING
+// Use triple quotes
