@@ -87,7 +87,8 @@ struct OnboardingView: View {
                     HStack{
                         Capsule()
                             .fill(Color("ColorRed"))
-                            .frame(width: 80)
+                            .frame(width: buttonOffset + 80) // added 80 because button initial offset is 0.
+                        
                         Spacer()
                         
                     }
@@ -108,8 +109,16 @@ struct OnboardingView: View {
                         .gesture(
                             DragGesture()
                                 .onChanged { gesture in
-                                    if gesture.translation.width > 0 {
+                                    if gesture.translation.width > 0 && buttonOffset <= buttonWidth - 80 {
                                         buttonOffset = gesture.translation.width
+                                    }
+                                }//: ONCHANGED
+                                .onEnded { _ in
+                                    if buttonOffset > buttonWidth / 2 {
+                                        buttonOffset = buttonWidth - 80
+                                        isOnboardingViewActive = false
+                                    } else {
+                                        buttonOffset = 0 // brings button back to start
                                     }
                                 }
                         ) //: GESTURE
@@ -144,3 +153,15 @@ struct OnboardingView_Previews: PreviewProvider {
     // 3. Replace Hello World text with copied code
 
 // if gesture.translation.width > 0 - Only run when the dragging has been started in the right direction
+
+// WHY SUBTRACT 80 if gesture.translation.width > 0 && buttonOffset <= buttonWidth - 80
+// Button is 80x80 and z stack uses the top left corner coordinate. This ensures the button keeps its position inside the component horizontally
+
+// IF BUTTON IS DRAGGED MORE THAN HALFWAY CONSIDER IT A COMPLETE ACTION, OTHERWISE MOVE BACK TO START
+//    .onEnded { _ in
+//        if buttonOffset > buttonWidth / 2 {
+//            buttonOffset = buttonWidth - 80
+//            isOnboardingViewActive = false
+//        } else {
+//            buttonOffset = 0 // brings button back to start
+//        }
