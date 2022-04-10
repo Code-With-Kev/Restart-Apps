@@ -20,6 +20,7 @@ struct OnboardingView: View {
     // Initialize button drag
     
     @State private var isAnimating: Bool = false
+    @State private var imageOffset: CGSize = .zero
     
     
         
@@ -42,6 +43,9 @@ struct OnboardingView: View {
                         .font(.system(size: 60))
                         .fontWeight(.heavy)
                         .foregroundColor(.white)
+                        .offset(y: abs(imageOffset.width) / -5)
+                        .opacity(abs(imageOffset.width * 100))
+                        .animation(.easeOut(duration: 1), value: imageOffset)
                     
                     //use triple quotes for a subheading
                     Text("""
@@ -61,12 +65,35 @@ struct OnboardingView: View {
                //MARK: - CENTER
                 ZStack {
                     CircleGroupView(ShapeColor: .white, ShapeOpacity: 0.2)
+                        //Move background in opposite direction
+                        .offset(x: imageOffset.width * -1)
+                        .blur(radius: abs(imageOffset.width) / 5)
+                        .animation(.easeOut(duration: 1), value: imageOffset)
                     
                     Image("character-1")
                         .resizable()
                         .scaledToFit()
                         .opacity(isAnimating ? 1 : 0)
                         .animation(.easeOut(duration: 0.5), value: isAnimating)
+                        //Accelerates drag gesture movement
+                        .offset(x: imageOffset.width * 1.2, y: 0)
+                        .rotationEffect(.degrees(Double(imageOffset.width / 20)))
+                        .gesture(
+                            DragGesture()
+                                .onChanged { gesture in
+                                    //Control how far you can drag image
+                                    if abs(imageOffset.width) <= 150 {
+                                        imageOffset = gesture.translation
+                                    }
+                                }//: ONCHANGED
+                            //Reset image position to start after drag
+                                .onEnded {  _ in
+                                    imageOffset = .zero
+                                }
+                        ) //: GESTURE
+                        //Make drag movement smoother
+                        .animation(.easeOut(duration: 1), value: imageOffset)
+                    
                 }//: CENTER
                 
                 Spacer()
@@ -179,3 +206,19 @@ struct OnboardingView_Previews: PreviewProvider {
 //        } else {
 //            buttonOffset = 0 // brings button back to start
 //        }
+
+// IF ALL PROPERTIES EQUAL ZERO USE .ZERO
+
+//@State private var imageOffset: CGSize = CGSize(width: 0, height: 0) ->
+// @State private var imageOffset: CGSize = .zero
+
+// ABSOLUTE VALUE
+//abs - converts any number to positive
+
+// UNDERSCORE
+// Represents an unnamed variable. Used when the variable itself isnt used in the for loop
+
+// RESET POSITION AT END OF ACTION
+//    .onEnded { _ in
+//        imageOffset = .zero
+//    }
