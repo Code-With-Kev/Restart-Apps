@@ -47,14 +47,7 @@ struct OnboardingView: View {
                 
                //MARK: - CENTER
                 ZStack {
-                    ZStack{
-                        Circle()
-                            .stroke(.white.opacity(0.2), lineWidth: 40)
-                            .frame(width: 260, height: 260, alignment: .center)
-                        Circle()
-                            .stroke(.white.opacity(0.2), lineWidth: 80)
-                            .frame(width: 260, height: 260, alignment: .center)
-                    } //: ZSTACK
+                    CircleGroupView(ShapeColor: .white, ShapeOpacity: 0.2)
                     
                     Image("character-1")
                         .resizable()
@@ -105,7 +98,7 @@ struct OnboardingView: View {
                         .foregroundColor(.white)
                         .frame(width: 80, height: 80, alignment: .center)
                         .onTapGesture {
-                            isOnboardingViewActive = false 
+                            isOnboardingViewActive = false
                         }
                         
                         Spacer()
@@ -130,3 +123,8 @@ struct OnboardingView_Previews: PreviewProvider {
 }
 
 //OPTION + COMMAND + LEFT ARROW = Section Fold
+
+// CREATING REUSABLE COMPOENTS:
+    // 1. Copy code you want to be reused
+    // 2. Create a new SwiftUI file in View Folder
+    // 3. Replace Hello World text with copied code
