@@ -86,3 +86,5 @@ struct HomeView_Previews: PreviewProvider {
 // The reason you dont need to wrap the recycle symbol in a HStack is because when you use two or more UI elements inside as a button label
 
 // Dispatch Queue - An object that manages the execution of tasks serially or concurrently on your app's main thread or on a background thread.
+
+// Haptic Feedback - engages people's sense of touch to enhance the experience of interacting with onscreen interfaces. Can also be used to highlight, deny or confirm any other user iteractions.
